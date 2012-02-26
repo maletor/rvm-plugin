@@ -21,7 +21,7 @@ class RvmWrapper < Jenkins::Tasks::BuildWrapper
       build.abort
     end
 
-    if launcher.execute("bash","-c","test ! -f ~/.rvm/scripts/rvm")==0 then
+    if launcher.execute("bash","-c","test ! -f {/usr/local/rvm,~/.rvm}/scripts/rvm")==0 then
       listener << "Installing RVM\n"
       installer = build.workspace+"rvm-installer"
       installer.native.copyFrom(java.net.URL.new("https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer"))
@@ -30,7 +30,7 @@ class RvmWrapper < Jenkins::Tasks::BuildWrapper
     end
 
     after = StringIO.new()
-    if launcher.execute("bash","-c","source ~/.rvm/scripts/rvm && rvm_install_on_use_flag=1 && rvm use --create #{arg} && export > rvm.env", {:out=>listener,:chdir=>build.workspace})!=0 then
+    if launcher.execute("bash","-c","source {/usr/local/rvm,~/.rvm}/scripts/rvm && rvm_install_on_use_flag=1 && rvm use --create #{arg} && export > rvm.env", {:out=>listener,:chdir=>build.workspace})!=0 then
       build.abort "Failed to setup RVM environment"
     end
 
